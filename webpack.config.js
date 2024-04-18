@@ -1,5 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 
 module.exports = {
@@ -22,7 +24,37 @@ module.exports = {
             ignoreOrder: false,
             linkType: 'text/css',
         }),
+        // new CopyPlugin({
+        //     patterns: [
+        //         {
+        //             context: path.resolve(__dirname, "dist"),
+        //             from: "./src/*.html",
+        //         },
+        //     ],
+        // }),
+
+        // new CopyPlugin({
+        //     patterns: [
+        //         {
+        //             from: path.resolve(__dirname, "src", "assets"),
+        //             to: path.resolve(__dirname, "dist", "assets"),
+        //         },
+        //     ],
+        // })
+
+        new HtmlMinimizerPlugin({
+            template: './src/*.html',
+            test: /\.html$/i,
+            exclude: /node_modules/,
+            include: /\/includes/,
+        })
     ],
+    // optimization: {
+    //     minimize: true,
+    //     minimizer: [
+    //         new HtmlMinimizerPlugin()
+    //     ],
+    // },
     module: {
         rules: [
             {
