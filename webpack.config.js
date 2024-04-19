@@ -12,23 +12,18 @@ module.exports = {
         // test: path.resolve(__dirname, 'src/js/test.js'),
         // test2: path.resolve(__dirname, 'src/js/test2.js'),
     },
-    output: {
-        // filename: 'js/main.js',
-        filename: 'js/[name].js',
-        path: path.resolve(__dirname, 'dist'),
-        clean: true,
-        assetModuleFilename: 'assets/[name][ext]',
-    },
     devtool: 'source-map',
     devServer: {
-        static: {
-            directory: path.resolve(__dirname, 'dist'),
-        },
+        // static: {
+        //     directory: path.resolve(__dirname, 'dist'),
+        // },
+        watchFiles: ['src/**/*'],
+        static: './dist',
         hot: true,
         open: true,
         compress: true,
         port: 3000,
-        historyApiFallback: true
+        historyApiFallback: true,
     },
     module: {
         rules: [
@@ -48,7 +43,7 @@ module.exports = {
             },
             {
                 test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
             },
             {
                 test: /\.(gif|png|jpe?g|svg)$/i,
@@ -63,22 +58,6 @@ module.exports = {
                     'image-webpack-loader',
                 ],
             },
-            // {
-            //     test: /\.(png|svg|jpg|jpeg|gif)$/i,
-            //     type: 'asset/resource',
-            // },
-            // {
-            //     test: /\.(woff|woff2|eot|ttf|otf)$/i,
-            //     type: 'asset/resource',
-            // },
-            // {
-            //     test: /\.(csv|tsv)$/i,
-            //     use: ['csv-loader'],
-            // },
-            // {
-            //     test: /\.xml$/i,
-            //     use: ['xml-loader'],
-            // },
             {
                 test: /\.s[ac]ss$/i,
                 use: [
@@ -90,38 +69,10 @@ module.exports = {
                     'sass-loader',
                 ],
             },
-            // {
-            //     test: /\.m?ts$/,
-            //     exclude: /(node_modules|bower_components)/,
-            //     use: {
-            //         loader: 'babel-loader',
-            //         options: {
-            //             presets: ['@babel/preset-env', '@babel/preset-typescript'],
-            //         },
-            //     },
-            // },
-            // {
-            //     test: /\.m?tsx$/,
-            //     exclude: /(node_modules|bower_components)/,
-            //     use: {
-            //         loader: 'babel-loader',
-            //         options: {
-            //             presets: ['@babel/preset-env', '@babel/preset-typescript', '@babel/preset-react'],
-            //         },
-            //     },
-            // },
-            // {
-            //     test: /\.m?jsx$/,
-            //     exclude: /(node_modules|bower_components)/,
-            //     use: {
-            //         loader: 'babel-loader',
-            //         options: {
-            //             presets: ['@babel/preset-env', '@babel/preset-react'],
-            //         },
-            //     },
-            // },
-
         ],
+    },
+    resolve: {
+        extensions: ['.js', '.mjs', '.cjs', '.jsx', '.ts', '.tsx', '.json'],
     },
     plugins: [
         new MiniCssExtractPlugin({
@@ -130,41 +81,25 @@ module.exports = {
             ignoreOrder: false,
             linkType: 'text/css',
         }),
-        // new CopyPlugin({
-        //     patterns: [
-        //         {
-        //             context: path.resolve(__dirname, "dist"),
-        //             from: "./src/*.html",
-        //         },
-        //     ],
-        // }),
-
-        // new CopyPlugin({
-        //     patterns: [
-        //         {
-        //             from: path.resolve(__dirname, "src", "assets"),
-        //             to: path.resolve(__dirname, "dist", "assets"),
-        //         },
-        //     ],
-        // }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, "src", "assets"),
+                    to: path.resolve(__dirname, "dist", "assets"),
+                },
+            ],
+        }),
         new HtmlWebpackPlugin({
             // template: "src/[name].html",
-            title: "Webpack Setup",
-            filename: "index.html",
+            // title: "Webpack Setup",
+            // filename: "index.html",
             template: "src/index.html",
         }),
-
-        // new HtmlMinimizerPlugin({
-        //     template: './src/*.html',
-        //     // test: /\.html$/i,
-        //     // exclude: /node_modules/,
-        //     // include: /\/includes/,
-        // })
     ],
-    // optimization: {
-    //     minimize: true,
-    //     minimizer: [
-    //         new HtmlMinimizerPlugin()
-    //     ],
-    // },
+    output: {
+        filename: 'js/[name].js',
+        path: path.resolve(__dirname, 'dist'),
+        clean: true,
+        // assetModuleFilename: 'assets/[name][ext]',
+    },
 };
