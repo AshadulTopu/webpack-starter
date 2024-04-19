@@ -2,59 +2,34 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/js/index.js',
-    output: {
-        filename: 'main.js',
-        path: path.resolve(__dirname, 'dist'),
+    mode: 'development',
+    // mode: 'production',
+    entry: {
+        main: path.resolve(__dirname, 'src/js/index.js'),
+        // test: path.resolve(__dirname, 'src/js/test.js'),
+        // test2: path.resolve(__dirname, 'src/js/test2.js'),
     },
+    output: {
+        // filename: 'js/main.js',
+        filename: 'js/[name].js',
+        path: path.resolve(__dirname, 'dist'),
+        clean: true,
+        assetModuleFilename: 'assets/[name][ext]',
+    },
+    devtool: 'source-map',
     devServer: {
-        static: './dist',
+        static: {
+            directory: path.resolve(__dirname, 'dist'),
+        },
         hot: true,
         open: true,
         compress: true,
+        port: 3000,
+        historyApiFallback: true
     },
-    mode: 'development',
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'style.css',
-            chunkFilename: '[id].css',
-            ignoreOrder: false,
-            linkType: 'text/css',
-        }),
-        // new CopyPlugin({
-        //     patterns: [
-        //         {
-        //             context: path.resolve(__dirname, "dist"),
-        //             from: "./src/*.html",
-        //         },
-        //     ],
-        // }),
-
-        // new CopyPlugin({
-        //     patterns: [
-        //         {
-        //             from: path.resolve(__dirname, "src", "assets"),
-        //             to: path.resolve(__dirname, "dist", "assets"),
-        //         },
-        //     ],
-        // })
-
-        new HtmlMinimizerPlugin({
-            template: './src/*.html',
-            test: /\.html$/i,
-            exclude: /node_modules/,
-            include: /\/includes/,
-        })
-    ],
-    // optimization: {
-    //     minimize: true,
-    //     minimizer: [
-    //         new HtmlMinimizerPlugin()
-    //     ],
-    // },
     module: {
         rules: [
             {
@@ -76,9 +51,22 @@ module.exports = {
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
-                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                test: /\.(gif|png|jpe?g|svg)$/i,
                 type: 'asset/resource',
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 8192,
+                        },
+                    },
+                    'image-webpack-loader',
+                ],
             },
+            // {
+            //     test: /\.(png|svg|jpg|jpeg|gif)$/i,
+            //     type: 'asset/resource',
+            // },
             // {
             //     test: /\.(woff|woff2|eot|ttf|otf)$/i,
             //     type: 'asset/resource',
@@ -102,16 +90,6 @@ module.exports = {
                     'sass-loader',
                 ],
             },
-            // {
-            //     test: /\.m?js$/,
-            //     exclude: /(node_modules|bower_components)/,
-            //     use: {
-            //         loader: 'babel-loader',
-            //         options: {
-            //             presets: ['@babel/preset-env'],
-            //         },
-            //     },
-            // },
             // {
             //     test: /\.m?ts$/,
             //     exclude: /(node_modules|bower_components)/,
@@ -145,4 +123,48 @@ module.exports = {
 
         ],
     },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'css/app.css',
+            // chunkFilename: '[id].css',
+            ignoreOrder: false,
+            linkType: 'text/css',
+        }),
+        // new CopyPlugin({
+        //     patterns: [
+        //         {
+        //             context: path.resolve(__dirname, "dist"),
+        //             from: "./src/*.html",
+        //         },
+        //     ],
+        // }),
+
+        // new CopyPlugin({
+        //     patterns: [
+        //         {
+        //             from: path.resolve(__dirname, "src", "assets"),
+        //             to: path.resolve(__dirname, "dist", "assets"),
+        //         },
+        //     ],
+        // }),
+        new HtmlWebpackPlugin({
+            // template: "src/[name].html",
+            title: "Webpack Setup",
+            filename: "index.html",
+            template: "src/index.html",
+        }),
+
+        // new HtmlMinimizerPlugin({
+        //     template: './src/*.html',
+        //     // test: /\.html$/i,
+        //     // exclude: /node_modules/,
+        //     // include: /\/includes/,
+        // })
+    ],
+    // optimization: {
+    //     minimize: true,
+    //     minimizer: [
+    //         new HtmlMinimizerPlugin()
+    //     ],
+    // },
 };

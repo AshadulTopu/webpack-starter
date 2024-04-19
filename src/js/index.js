@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import '../styles/app.css';
+import '../style/css/app.css';
+import '../style/sass/main.scss';
+import img1 from '../assets/ApexX_01.jpg';
 
 // console.log(_);
 // const element = document.createElement('h1');
@@ -17,5 +19,17 @@ function component() {
 }
 
 document.body.appendChild(component());
+
+// function imgComponent(img) {
+//     const imgElement = document.createElement('img');
+//     imgElement.src = img;
+//     const element = document.createElement('div');
+//     element.appendChild(imgElement);
+// }
+// console.log(imgComponent(img1));
+
+// document.body.appendChild(imgComponent(img1));
+
+// console.log(img);
 
 console.log('Hello world!');
