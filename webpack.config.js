@@ -1,22 +1,32 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const autoprefixer = require("autoprefixer");
+
+
+
+// for manage html file
+// let htmlPageNames = ['example1', 'example2', 'example3', 'example4'];
+// let multipleHtmlPlugins = htmlPageNames.map(name => {
+//     return new HtmlWebpackPlugin({
+//         template: `./src/${name}.html`, // relative path to the HTML files
+//         filename: `${name}.html`, // output HTML files
+//         chunks: [`${name}`] // respective JS files
+//     })
+// });
+
+
+
 
 module.exports = {
-    mode: 'development',
-    // mode: 'production',
     entry: {
         main: path.resolve(__dirname, 'src/js/index.js'),
-        // test: path.resolve(__dirname, 'src/js/test.js'),
-        // test2: path.resolve(__dirname, 'src/js/test2.js'),
     },
+    mode: 'development',
     devtool: 'source-map',
     devServer: {
-        // static: {
-        //     directory: path.resolve(__dirname, 'dist'),
-        // },
         watchFiles: ['src/**/*'],
         static: './dist',
         hot: true,
@@ -29,7 +39,23 @@ module.exports = {
         rules: [
             {
                 test: /\.html$/i,
-                loader: 'html-loader',
+                // loader: 'html-loader',
+                use: [
+                    {
+                        loader: 'html-loader',
+                        // options: {
+                        //     minimize: true,
+                        //     sources: true
+                        // }
+                    },
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name][ext]',
+                        }
+                    }
+                ],
+                exclude: path.resolve(__dirname, 'src/index.html'),
             },
             {
                 test: /\.(?:js|mjs|cjs)$/,
@@ -46,6 +72,18 @@ module.exports = {
                 use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
             },
             {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader, 'css-loader', {
+                        loader: "postcss-loader", options: {
+                            postcssOptions: {
+                                plugins: [autoprefixer],
+                            },
+                        },
+                    }, 'sass-loader',
+                ],
+            },
+            {
                 test: /\.(gif|png|jpe?g|svg)$/i,
                 type: 'asset/resource',
                 use: [
@@ -57,17 +95,9 @@ module.exports = {
                     },
                     'image-webpack-loader',
                 ],
-            },
-            {
-                test: /\.s[ac]ss$/i,
-                use: [
-                    // Creates `style` nodes from JS strings
-                    'style-loader',
-                    // Translates CSS into CommonJS
-                    'css-loader',
-                    // Compiles Sass to CSS
-                    'sass-loader',
-                ],
+                generator: {
+                    filename: 'assets/images/[name][ext]',
+                }
             },
         ],
     },
@@ -77,9 +107,6 @@ module.exports = {
     plugins: [
         new MiniCssExtractPlugin({
             filename: 'css/app.css',
-            // chunkFilename: '[id].css',
-            ignoreOrder: false,
-            linkType: 'text/css',
         }),
         new CopyPlugin({
             patterns: [
@@ -95,7 +122,11 @@ module.exports = {
             // filename: "index.html",
             template: "src/index.html",
         }),
-    ],
+        // new HtmlWebpackPlugin({
+        //     template: "./src/index.html",
+        //     chunks: ['main']
+        // }),
+    ],//.concat(multipleHtmlPlugins),
     output: {
         filename: 'js/[name].js',
         path: path.resolve(__dirname, 'dist'),
