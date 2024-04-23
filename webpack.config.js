@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const autoprefixer = require("autoprefixer");
-
+const HtmlWebpackSimpleIncludePlugin = require("html-webpack-simple-include-plugin");
 
 
 // for manage html file
@@ -43,10 +43,6 @@ module.exports = {
                 use: [
                     {
                         loader: 'html-loader',
-                        // options: {
-                        //     minimize: true,
-                        //     sources: true
-                        // }
                     },
                     {
                         loader: 'file-loader',
@@ -117,19 +113,47 @@ module.exports = {
             ],
         }),
         new HtmlWebpackPlugin({
-            // template: "src/[name].html",
             // title: "Webpack Setup",
-            // filename: "index.html",
-            template: "src/index.html",
+            template: path.resolve(__dirname, "src/index.html"),
+            filename: "index.html",
+            // chunks: ['main'],
+            inject: 'body'
         }),
-        // new HtmlWebpackPlugin({
-        //     template: "./src/index.html",
-        //     chunks: ['main']
-        // }),
-    ],//.concat(multipleHtmlPlugins),
+        new HtmlWebpackPlugin({
+            // title: "Webpack Setup",
+            template: path.resolve(__dirname, "src/example1.html"),
+            filename: "example1.html",
+            // chunks: ['example1'],
+            inject: 'body'
+        }),
+        new HtmlWebpackPlugin({
+            // title: "Webpack Setup",
+            template: path.resolve(__dirname, "src/example2.html"),
+            filename: "example2.html",
+            // chunks: ['example2'],
+            inject: 'body'
+        }),
+        new HtmlWebpackSimpleIncludePlugin([
+            {
+                tag: "<include-about />",
+                content: fs.readFileSync(
+                    path.resolve(__dirname, "src/partials/about.html")
+                ),
+            },
+        ]),
+        new HtmlWebpackSimpleIncludePlugin([
+            {
+                tag: "<include-about-me />",
+                content: fs.readFileSync(
+                    path.resolve(__dirname, "src/partials/about-me.html")
+                ),
+            },
+        ]),
+    ],
     output: {
         filename: 'js/[name].js',
         path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
         clean: true,
         // assetModuleFilename: 'assets/[name][ext]',
     },
